@@ -1,21 +1,25 @@
 # Learn Google Test
 
-Welcome to the **Learn Google Test** repository! This project aims to help you master writing unit tests for C++ code using Google Test (GTest), a robust testing framework developed by Google.
+Welcome to the **Learn Google Test** repository! This project teaches you how to write unit tests for C++ code using Google Test (GTest), Google's powerful testing framework.
 
 ## Table of Contents
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
-- [Getting Started](#getting-started)
-- [Example Test](#example-test)
 - [Building and Running Tests](#building-and-running-tests)
+  - [Recommended Method (CMake)](#recommended-method-cmake)
+  - [Manual Installation (Advanced Users)](#manual-installation-advanced-users)
+- [Example Test](#example-test)
 - [Contributing](#contributing)
 - [License](#license)
 
 ## Prerequisites
-- C++ compiler (e.g., GCC, Clang, MSVC)
+- C++ compiler (GCC, Clang, or MSVC)
 - [CMake](https://cmake.org/) (version 3.14+)
 - Git (for cloning the repository)
-- Google Test library (installation instructions below)
+- Google Test dependencies (for manual installation):
+  ```bash
+  sudo apt-get install libgtest-dev  # Ubuntu/Debian
+  ```
 
 ## Installation
 
@@ -25,81 +29,92 @@ git clone https://github.com/AbdulrhmanAnsary/learnGoogletest.git
 cd learnGoogletest
 ```
 
-### Install Google Test
-#### Linux/macOS
-Use your package manager:
-```bash
-# Ubuntu/Debian
-sudo apt-get install libgtest-dev
+## Building and Running Tests
 
-# macOS (via Homebrew)
-brew install googletest
+### Recommended Method (CMake)
+
+1. **Create a build directory** (outside source tree):
+```bash
+mkdir -p build && cd build
 ```
 
-#### Windows
-- Use [vcpkg](https://vcpkg.io/): `vcpkg install gtest`
-- Or follow the [official guide](https://github.com/google/googletest).
+2. **Generate build files** with CMake:
+```bash
+cmake .. -DCMAKE_BUILD_TYPE=Release
+```
 
-## Getting Started
+3. **Compile the project**:
+```bash
+make -j$(nproc)
+```
 
-1. **Create a Test File**: Write tests in a `_test.cpp` file (e.g., `example_test.cpp`).
-2. **Include Headers**: 
-   ```cpp
-   #include <gtest/gtest.h>
-   ```
-3. **Write Tests**: Use `TEST()` and assertion macros like `ASSERT_EQ` or `EXPECT_TRUE`.
+4. **Run the test executable**:
+```bash
+./bin/example_test  # Adjust path if different
+```
+
+Example `CMakeLists.txt` for reference:
+```cmake
+cmake_minimum_required(VERSION 3.14)
+project(LearnGTest)
+
+find_package(GTest REQUIRED)
+add_executable(example_test src/example_test.cpp)
+target_link_libraries(example_test GTest::GTest GTest::Main)
+```
+
+---
+
+### Manual Installation (Advanced Users)
+
+#### 1. Build Google Test Libraries
+```bash
+cd googletest
+mkdir build && cd build
+cmake .. -DBUILD_SHARED_LIBS=ON
+make -j$(nproc)
+```
+
+#### 2. Install System-Wide
+```bash
+# Install libraries
+sudo cp lib/*.so /usr/local/lib/
+
+# Install headers
+sudo cp -r ../googletest/include/gtest /usr/local/include
+
+# Update library cache
+sudo ldconfig -v
+```
+
+**⚠️ Critical Warnings:**
+- Verify library compatibility with your system
+- Backup existing GTest installations
+- Consider using virtual environments instead
+
+---
 
 ## Example Test
 ```cpp
-// example_test.cpp
 #include <gtest/gtest.h>
 
-TEST(MathTest, Addition) {
-  EXPECT_EQ(2 + 3, 5);
+TEST(MathTest, BasicMultiplication) {
+  ASSERT_EQ(6 * 7, 42) << "Multiplication logic broken";
 }
 
 int main(int argc, char **argv) {
-  testing::InitGoogleTest(&argc, argv);
+  ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }
 ```
 
-## Building and Running Tests
-
-### Using CMake
-1. Create a `CMakeLists.txt`:
-   ```cmake
-   cmake_minimum_required(VERSION 3.14)
-   project(LearnGTest)
-   
-   find_package(GTest REQUIRED)
-   add_executable(example_test example_test.cpp)
-   target_link_libraries(example_test GTest::GTest GTest::Main)
-   ```
-2. Build and run:
-   ```bash
-   mkdir build && cd build
-   cmake ..
-   make
-   ./example_test
-   ```
-
-### Manual Compilation (Quick Start)
-```bash
-g++ -std=c++11 example_test.cpp -lgtest -lgtest_main -pthread -o example_test
-./example_test
-```
-
 ## Contributing
-Contributions are welcome! Please:
-1. Fork the repository.
-2. Create a feature branch.
-3. Submit a pull request with a clear description.
+Contributions welcome! Please:
+1. Fork & create a feature branch
+2. Include documentation updates
+3. Test changes thoroughly
+4. Submit PR with [conventional commits](https://www.conventionalcommits.org/)
 
 ## License
-This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
-
----
-
-For more details, refer to the [Google Test Documentation](https://github.com/google/googletest).
-```
+MIT License - See [LICENSE](LICENSE).
+Official documentation: [Google Test Docs](https://google.github.io/googletest/)
